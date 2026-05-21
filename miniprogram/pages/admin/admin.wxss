@@ -1,0 +1,97 @@
+.login-card {
+  padding: 40rpx;
+}
+
+.input-group {
+  border: 2rpx solid #ddd;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.password-input {
+  padding: 24rpx;
+  font-size: 28rpx;
+}
+
+.stat-cards {
+  display: flex;
+  gap: 20rpx;
+}
+
+.stat-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx;
+}
+
+.stat-icon {
+  font-size: 48rpx;
+  margin-bottom: 10rpx;
+}
+
+.stat-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #1677ff;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.format-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.format-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx;
+  background-color: #f9f9f9;
+  border-radius: 10rpx;
+}
+
+.format-name {
+  font-size: 26rpx;
+  color: #333;
+}
+
+.format-count {
+  font-size: 24rpx;
+  color: #1677ff;
+  font-weight: bold;
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 12rpx;
+  background-color: #f9f9f9;
+  border-radius: 10rpx;
+}
+
+.recent-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.recent-name {
+  font-size: 26rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,49 @@
+<view class="container">
+  <view class="card header-card" wx:if="{{history.length > 0}}">
+    <view class="flex-between">
+      <text class="text-large" style="font-weight: bold;">转换历史</text>
+      <text class="text-danger" bindtap="onClearAll">清空</text>
+    </view>
+    <text class="text-muted text-small mt-10">共 {{history.length}} 条记录</text>
+  </view>
+
+  <view class="history-list" wx:if="{{history.length > 0}}">
+    <view class="history-item card" wx:for="{{history}}" wx:key="id">
+      <view class="flex-between">
+        <view class="flex-row" style="flex: 1; overflow: hidden;">
+          <text class="file-icon">{{item.icon}}</text>
+          <view class="file-info">
+            <view class="file-name">{{item.name}}</view>
+            <view class="file-size">
+              <text class="text-muted">{{item.fromFormat}}</text>
+              <text class="text-primary"> → </text>
+              <text class="text-muted">{{item.toFormat}}</text>
+              <text class="ml-10">· {{item.time}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="tag tag-success">完成</view>
+      </view>
+      
+      <view class="action-row mt-20">
+        <view class="action-btn" data-item="{{item}}" bindtap="onPreview">
+          <text>👁️ 预览</text>
+        </view>
+        <view class="action-btn" data-item="{{item}}" bindtap="onReconvert">
+          <text>🔄 再次转换</text>
+        </view>
+        <view class="action-btn delete-btn" data-id="{{item.id}}" bindtap="onDelete">
+          <text>🗑️ 删除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{history.length === 0}}">
+    <view class="empty-state">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无转换记录</text>
+      <text class="text-muted text-small mt-10">完成的转换会显示在这里</text>
+    </view>
+  </view>
+</view>

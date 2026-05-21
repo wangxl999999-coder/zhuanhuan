@@ -1,0 +1,85 @@
+<view class="container">
+  <view class="card" wx:if="{{!converting}}">
+    <text class="text-large" style="font-weight: bold;">待转换文件</text>
+    <view class="file-list mt-20">
+      <view class="file-item" wx:for="{{files}}" wx:key="id">
+        <text class="file-icon">{{item.icon}}</text>
+        <view class="file-info">
+          <view class="file-name">{{item.name}}</view>
+          <view class="file-size">{{item.sizeText}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{!converting && !presetTo}}">
+    <text class="text-large" style="font-weight: bold;">选择目标格式</text>
+    <view class="format-list mt-20">
+      <view 
+        class="format-item {{selectedFormat === item ? 'format-selected' : ''}}"
+        wx:for="{{formatList}}" 
+        wx:key="format"
+        data-format="{{item.format}}"
+        bindtap="onSelectFormat"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card" wx:if="{{!converting && presetTo}}">
+    <text class="text-large" style="font-weight: bold;">目标格式</text>
+    <view class="format-selected mt-20" style="display: inline-block; padding: 20rpx 40rpx;">
+      <text style="font-size: 32rpx;">{{presetFrom}} → {{presetTo}}</text>
+    </view>
+  </view>
+
+  <view class="card ad-card" wx:if="{{needAd && !converting}}">
+    <view class="ad-content">
+      <text style="font-size: 40rpx;">📺</text>
+      <view style="margin-left: 20rpx;">
+        <text class="text-large" style="font-weight: bold;">观看广告获得转换次数</text>
+        <view class="text-muted text-small mt-10">观看一次广告可获得1次免费转换</view>
+      </view>
+    </view>
+    <view class="btn-primary mt-20" style="text-align: center;" bindtap="onWatchAd">
+      观看广告
+    </view>
+  </view>
+
+  <view class="card free-count" wx:if="{{!needAd && !converting}}">
+    <text class="text-muted">剩余免费转换次数：</text>
+    <text class="text-primary text-large" style="font-weight: bold;">{{freeCount}}</text>
+    <text class="text-muted"> 次</text>
+  </view>
+
+  <view class="btn-primary start-btn" style="text-align: center;" bindtap="onStartConvert" wx:if="{{!converting}}">
+    开始转换
+  </view>
+
+  <view class="converting-card card" wx:if="{{converting}}">
+    <view class="converting-header">
+      <text style="font-size: 60rpx;">⚙️</text>
+      <text class="text-large" style="font-weight: bold; margin-left: 20rpx;">正在转换中...</text>
+    </view>
+    
+    <view class="progress-section mt-30">
+      <view class="flex-between">
+        <text class="text-muted">转换进度</text>
+        <text class="text-primary">{{convertProgress}}%</text>
+      </view>
+      <view class="progress-bar mt-10">
+        <view class="progress-inner" style="width: {{convertProgress}}%;"></view>
+      </view>
+    </view>
+
+    <view class="current-file mt-30" wx:if="{{files[currentFileIndex]}}">
+      <text class="text-muted">当前文件：</text>
+      <text class="text-small">{{files[currentFileIndex].name}}</text>
+    </view>
+
+    <view class="tip mt-30 text-muted text-small">
+      请保持小程序在前台运行，转换完成后自动跳转
+    </view>
+  </view>
+</view>

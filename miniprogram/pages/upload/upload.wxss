@@ -1,0 +1,35 @@
+.upload-options {
+  display: flex;
+  gap: 20rpx;
+}
+
+.upload-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 10rpx;
+  background-color: #f9f9f9;
+  border-radius: 16rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.upload-option:active {
+  background-color: #f0f0f0;
+}
+
+.file-list {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.remove-btn {
+  color: #999;
+  font-size: 36rpx;
+  padding: 10rpx;
+}
+
+.remove-btn:active {
+  color: #fa5151;
+}

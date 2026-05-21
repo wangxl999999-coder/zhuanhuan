@@ -1,0 +1,251 @@
+/**app.wxss**/
+page {
+  background-color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, sans-serif;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.container {
+  min-height: 100vh;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background-color: #1677ff;
+  color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx 40rpx;
+  font-size: 30rpx;
+  border: none;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-secondary {
+  background-color: #fff;
+  color: #1677ff;
+  border: 2rpx solid #1677ff;
+  border-radius: 12rpx;
+  padding: 20rpx 40rpx;
+  font-size: 30rpx;
+}
+
+.btn-secondary::after {
+  border: none;
+}
+
+.btn-disabled {
+  background-color: #ccc;
+  color: #999;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-primary {
+  color: #1677ff;
+}
+
+.text-secondary {
+  color: #666;
+}
+
+.text-muted {
+  color: #999;
+}
+
+.text-success {
+  color: #07c160;
+}
+
+.text-danger {
+  color: #fa5151;
+}
+
+.text-large {
+  font-size: 36rpx;
+}
+
+.text-small {
+  font-size: 24rpx;
+}
+
+.mt-10 {
+  margin-top: 10rpx;
+}
+
+.mt-20 {
+  margin-top: 20rpx;
+}
+
+.mt-30 {
+  margin-top: 30rpx;
+}
+
+.mb-10 {
+  margin-bottom: 10rpx;
+}
+
+.mb-20 {
+  margin-bottom: 20rpx;
+}
+
+.mb-30 {
+  margin-bottom: 30rpx;
+}
+
+.p-20 {
+  padding: 20rpx;
+}
+
+.p-30 {
+  padding: 30rpx;
+}
+
+.divider {
+  height: 2rpx;
+  background-color: #eee;
+  margin: 20rpx 0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60rpx;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.empty-state .empty-icon {
+  font-size: 120rpx;
+  color: #ddd;
+  margin-bottom: 20rpx;
+}
+
+.empty-state .empty-text {
+  color: #999;
+  font-size: 28rpx;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.file-icon {
+  font-size: 60rpx;
+  margin-right: 20rpx;
+}
+
+.file-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.file-name {
+  font-size: 28rpx;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.progress-bar {
+  height: 12rpx;
+  background-color: #eee;
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.progress-inner {
+  height: 100%;
+  background-color: #1677ff;
+  border-radius: 6rpx;
+  transition: width 0.3s ease;
+}
+
+.tag {
+  display: inline-block;
+  padding: 6rpx 16rpx;
+  border-radius: 6rpx;
+  font-size: 22rpx;
+  margin-right: 10rpx;
+}
+
+.tag-success {
+  background-color: #e8f7ee;
+  color: #07c160;
+}
+
+.tag-warning {
+  background-color: #fff7e6;
+  color: #faad14;
+}
+
+.tag-danger {
+  background-color: #ffebe8;
+  color: #fa5151;
+}
+
+.tag-default {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.badge {
+  position: absolute;
+  top: -10rpx;
+  right: -10rpx;
+  background-color: #fa5151;
+  color: #fff;
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 20rpx;
+}

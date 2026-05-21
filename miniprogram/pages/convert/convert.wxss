@@ -1,0 +1,69 @@
+.format-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.format-item {
+  padding: 20rpx 30rpx;
+  background-color: #f9f9f9;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #333;
+  border: 2rpx solid transparent;
+}
+
+.format-item:active {
+  background-color: #f0f0f0;
+}
+
+.format-selected {
+  background-color: #e6f4ff;
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+.ad-card {
+  border: 2rpx dashed #1677ff;
+  background-color: #f0f7ff;
+}
+
+.ad-content {
+  display: flex;
+  align-items: center;
+}
+
+.free-count {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10rpx;
+}
+
+.start-btn {
+  position: fixed;
+  bottom: 40rpx;
+  left: 20rpx;
+  right: 20rpx;
+  padding: 24rpx 0;
+  font-size: 32rpx;
+}
+
+.converting-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.current-file {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.tip {
+  text-align: center;
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  border-radius: 12rpx;
+}

@@ -1,0 +1,79 @@
+<view class="container">
+  <view class="card login-card" wx:if="{{!isAdmin}}">
+    <text class="text-large" style="font-weight: bold;">统计后台</text>
+    <text class="text-muted text-small mt-10">请输入管理员密码登录</text>
+    
+    <view class="input-group mt-30">
+      <input 
+        class="password-input" 
+        type="password" 
+        placeholder="请输入管理员密码" 
+        value="{{password}}"
+        bindinput="onInputPassword"
+      />
+    </view>
+    
+    <view class="btn-primary mt-30" style="text-align: center;" bindtap="onLogin">
+      登录
+    </view>
+  </view>
+
+  <view class="admin-content" wx:if="{{isAdmin}}">
+    <view class="card header-card">
+      <view class="flex-between">
+        <text class="text-large" style="font-weight: bold;">📊 数据统计</text>
+        <text class="text-danger" bindtap="onLogout">退出</text>
+      </view>
+    </view>
+
+    <view class="stat-cards">
+      <view class="stat-card card">
+        <text class="stat-icon">📈</text>
+        <text class="stat-value">{{totalCount}}</text>
+        <text class="stat-label">总转换次数</text>
+      </view>
+      <view class="stat-card card">
+        <text class="stat-icon">📅</text>
+        <text class="stat-value">{{todayCount}}</text>
+        <text class="stat-label">今日转换</text>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{formatStats.length > 0}}">
+      <text class="text-large" style="font-weight: bold;">转换类型统计</text>
+      <view class="format-stats mt-20">
+        <view class="format-stat-item" wx:for="{{formatStats}}" wx:key="format">
+          <text class="format-name">{{item.format}}</text>
+          <view class="format-count">
+            <text>{{item.count}}次</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{recentRecords.length > 0}}">
+      <text class="text-large" style="font-weight: bold;">最近记录</text>
+      <view class="recent-list mt-20">
+        <view class="recent-item" wx:for="{{recentRecords}}" wx:key="id">
+          <text class="file-icon">{{item.icon}}</text>
+          <view class="recent-info">
+            <view class="recent-name">{{item.name}}</view>
+            <view class="text-muted text-small">{{item.fromFormat}} → {{item.toFormat}} · {{item.time}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <text class="text-large" style="font-weight: bold;">数据导出</text>
+      <text class="text-muted text-small mt-10">导出本地所有转换记录为JSON格式</text>
+      <view class="btn-secondary mt-20" style="text-align: center;" bindtap="onExport">
+        导出数据
+      </view>
+    </view>
+
+    <view class="text-muted text-small mt-30" style="text-align: center;">
+      提示：本地统计仅记录本设备数据，完整统计请查看后端服务
+    </view>
+  </view>
+</view>

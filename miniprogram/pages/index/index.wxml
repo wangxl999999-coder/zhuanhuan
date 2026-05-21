@@ -1,0 +1,77 @@
+<view class="container">
+  <view class="header card">
+    <view class="flex-between">
+      <view>
+        <text class="text-large">免费转换次数</text>
+        <view class="mt-10">
+          <text class="text-primary text-large" style="font-size: 48rpx; font-weight: bold;">{{freeConversions}}</text>
+          <text class="text-muted"> 次</text>
+        </view>
+      </view>
+      <view class="btn-secondary" bindtap="onTapWatchAd">
+        <text>📺 观看广告</text>
+      </view>
+    </view>
+    <view class="divider"></view>
+    <view class="text-muted text-small">观看一次广告获得1次免费转换，所有转换功能通用</view>
+  </view>
+
+  <view class="quick-actions card">
+    <view class="text-large mb-20" style="font-weight: bold;">快捷转换</view>
+    <view class="convert-grid">
+      <view 
+        class="convert-item" 
+        wx:for="{{convertTypes}}" 
+        wx:key="id"
+        data-type="{{item}}"
+        bindtap="onTapConvertType"
+      >
+        <view class="convert-icon" style="background-color: {{item.color}};">
+          <text>{{item.icon}}</text>
+        </view>
+        <text class="convert-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="upload-section card">
+    <view class="flex-between">
+      <text class="text-large" style="font-weight: bold;">开始转换</text>
+      <text class="text-muted text-small">最大支持10MB</text>
+    </view>
+    <view class="upload-btn mt-20" bindtap="onTapUpload">
+      <text style="font-size: 80rpx;">📤</text>
+      <text class="mt-10 text-large">上传文件</text>
+      <text class="text-muted text-small mt-10">支持从聊天记录、本地选择</text>
+    </view>
+  </view>
+
+  <view class="recent-section card" wx:if="{{recentFiles.length > 0}}">
+    <view class="flex-between">
+      <text class="text-large" style="font-weight: bold;">最近转换</text>
+      <text class="text-primary" bindtap="onTapHistory">查看全部 ›</text>
+    </view>
+    <view class="recent-list mt-20">
+      <view 
+        class="file-item" 
+        wx:for="{{recentFiles}}" 
+        wx:key="id"
+        data-id="{{item.id}}"
+      >
+        <text class="file-icon">{{item.icon}}</text>
+        <view class="file-info">
+          <view class="file-name">{{item.name}}</view>
+          <view class="file-size">{{item.fromFormat}} → {{item.toFormat}} · {{item.time}}</view>
+        </view>
+        <view class="tag tag-success">完成</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="recent-section card" wx:if="{{recentFiles.length === 0}}">
+    <view class="empty-state">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无转换记录</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,42 @@
+<view class="container">
+  <view class="card success-card">
+    <text style="font-size: 80rpx;">✅</text>
+    <text class="text-large mt-20" style="font-weight: bold;">转换完成</text>
+    <text class="text-muted mt-10">共完成 {{results.length}} 个文件转换</text>
+  </view>
+
+  <view class="result-list">
+    <view class="result-item card" wx:for="{{results}}" wx:key="id" wx:for-index="index">
+      <view class="flex-between">
+        <view class="flex-row" style="flex: 1; overflow: hidden;">
+          <text class="file-icon">{{item.icon}}</text>
+          <view class="file-info">
+            <view class="file-name">{{item.name}}</view>
+            <view class="file-size">{{item.ext}} → {{item.toFormat}} · {{item.convertedFile.sizeText || ''}}</view>
+          </view>
+        </view>
+        <view class="tag tag-success">完成</view>
+      </view>
+      
+      <view class="action-buttons mt-20">
+        <view class="action-btn" data-index="{{index}}" bindtap="onPreview">
+          <text style="font-size: 32rpx;">👁️</text>
+          <text class="mt-5">预览</text>
+        </view>
+        <view class="action-btn" data-index="{{index}}" bindtap="onSave">
+          <text style="font-size: 32rpx;">💾</text>
+          <text class="mt-5">保存</text>
+        </view>
+        <view class="action-btn" data-index="{{index}}" open-type="share" bindtap="onShare">
+          <text style="font-size: 32rpx;">📤</text>
+          <text class="mt-5">分享</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer-actions">
+    <view class="btn-secondary" style="text-align: center;" bindtap="onBackHome">返回首页</view>
+    <view class="btn-primary mt-20" style="text-align: center;" open-type="share">分享给好友</view>
+  </view>
+</view>
