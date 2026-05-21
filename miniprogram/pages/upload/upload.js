@@ -2,6 +2,14 @@ const api = require('../../utils/api.js')
 const util = require('../../utils/util.js')
 const app = getApp()
 
+const ALLOWED_EXTENSIONS = [
+  'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+  'pdf', 'md', 'txt', 'csv', 'html', 'htm',
+  'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'
+]
+
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
+
 Page({
   data: {
     files: [],
@@ -22,63 +30,89 @@ Page({
   },
 
   onChooseFromChat() {
-    const presetFrom = this.data.presetFrom
-    let fileType = 'all'
-    
-    if (presetFrom) {
-      if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(presetFrom)) {
-        fileType = 'image'
-      } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'md', 'txt', 'html', 'htm'].includes(presetFrom)) {
-        fileType = 'file'
-      }
-    }
-
-    wx.chooseMessageFile({
-      count: 9,
-      type: fileType,
-      success: (res) => {
-        this.addFiles(res.tempFiles)
-      },
-      fail: (err) => {
-        console.error('选择文件失败', err)
-        if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
-          wx.showToast({ title: '选择文件失败', icon: 'none' })
-        }
-      }
-    })
+    this.chooseFile('chat')
   },
 
   onChooseFromLocal() {
+    this.chooseFile('local')
+  },
+
+  onChooseImages() {
+    this.chooseFile('camera')
+  },
+
+  chooseFile(source) {
     const presetFrom = this.data.presetFrom
-    let fileType = 'all'
-    
+    let fileType = 'file'
+    let mediaType = ['image']
+
     if (presetFrom) {
-      if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(presetFrom)) {
+      if (IMAGE_EXTENSIONS.includes(presetFrom)) {
         fileType = 'image'
-      } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'md', 'txt', 'html', 'htm'].includes(presetFrom)) {
+      } else if (ALLOWED_EXTENSIONS.includes(presetFrom)) {
         fileType = 'file'
       }
     }
 
-    wx.chooseMessageFile({
-      count: 9,
-      type: fileType,
-      success: (res) => {
-        this.addFiles(res.tempFiles)
-      },
-      fail: (err) => {
-        console.error('选择文件失败', err)
-        if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
-          wx.showToast({ title: '选择文件失败', icon: 'none' })
-        }
-      }
-    })
+    if (source === 'camera') {
+      this.chooseFromCamera(presetFrom)
+    } else {
+      this.chooseFromFilePicker(fileType, presetFrom)
+    }
   },
 
-  onChooseImages() {
-    const presetFrom = this.data.presetFrom
-    
-    if (presetFrom && !['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(presetFrom)) {
+  chooseFromFilePicker(fileType, presetFrom) {
+    const openPicker = () => {
+      wx.chooseMessageFile({
+        count: 9,
+        type: fileType,
+        success: (res) => {
+          this.addFiles(res.tempFiles, presetFrom)
+        },
+        fail: (err) => {
+          console.error('选择文件失败', err)
+          if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
+            if (err.errno === 112 || (err.errMsg && err.errMsg.indexOf('privacy') !== -1)) {
+              wx.showModal({
+                title: '需要隐私授权',
+                content: '请先同意隐私协议后再选择文件',
+                showCancel: false,
+                success: () => {
+                  if (wx.getPrivacySetting) {
+                    wx.getPrivacySetting({
+                      success: (res) => {
+                        if (res.needAuthorization && wx.openPrivacyContract) {
+                          wx.openPrivacyContract({})
+                        }
+                      }
+                    })
+                  }
+                }
+              })
+            } else {
+              wx.showToast({ title: '选择文件失败', icon: 'none' })
+            }
+          }
+        }
+      })
+    }
+
+    if (wx.requirePrivacyAuthorize) {
+      wx.requirePrivacyAuthorize({
+        success: () => {
+          openPicker()
+        },
+        fail: () => {
+          wx.showToast({ title: '请先同意隐私协议', icon: 'none' })
+        }
+      })
+    } else {
+      openPicker()
+    }
+  },
+
+  chooseFromCamera(presetFrom) {
+    if (presetFrom && !IMAGE_EXTENSIONS.includes(presetFrom)) {
       wx.showToast({
         title: `当前转换需要${util.getFormatName(presetFrom)}格式`,
         icon: 'none'
@@ -86,34 +120,68 @@ Page({
       return
     }
 
-    wx.chooseMedia({
-      count: 9,
-      mediaType: ['image'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        const files = res.tempFiles.map(file => ({
-          name: file.tempFilePath.split('/').pop(),
-          path: file.tempFilePath,
-          size: file.size,
-          type: 'image'
-        }))
-        this.addFiles(files)
-      },
-      fail: (err) => {
-        console.error('选择图片失败', err)
-        if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
-          wx.showToast({ title: '选择图片失败', icon: 'none' })
+    const openChooseMedia = () => {
+      wx.chooseMedia({
+        count: 9,
+        mediaType: ['image'],
+        sourceType: ['album', 'camera'],
+        success: (res) => {
+          const files = res.tempFiles.map(file => ({
+            name: file.tempFilePath.split('/').pop(),
+            path: file.tempFilePath,
+            size: file.size,
+            type: 'image'
+          }))
+          this.addFiles(files, presetFrom)
+        },
+        fail: (err) => {
+          console.error('选择图片失败', err)
+          if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
+            if (err.errno === 112 || (err.errMsg && err.errMsg.indexOf('privacy') !== -1)) {
+              wx.showModal({
+                title: '需要隐私授权',
+                content: '请先同意隐私协议后再选择图片，或从"手机本地"选择文件',
+                showCancel: false,
+                success: () => {
+                  if (wx.getPrivacySetting) {
+                    wx.getPrivacySetting({
+                      success: (res) => {
+                        if (res.needAuthorization && wx.openPrivacyContract) {
+                          wx.openPrivacyContract({})
+                        }
+                      }
+                    })
+                  }
+                }
+              })
+            } else {
+              wx.showToast({ title: '选择图片失败，请从"手机本地"选择', icon: 'none' })
+            }
+          }
         }
-      }
-    })
+      })
+    }
+
+    if (wx.requirePrivacyAuthorize) {
+      wx.requirePrivacyAuthorize({
+        success: () => {
+          openChooseMedia()
+        },
+        fail: () => {
+          wx.showToast({ title: '请先同意隐私协议', icon: 'none' })
+        }
+      })
+    } else {
+      openChooseMedia()
+    }
   },
 
-  addFiles(newFiles) {
+  addFiles(newFiles, presetFrom) {
     const currentFiles = this.data.files
     const validFiles = []
     let oversizeCount = 0
     let invalidFormatCount = 0
-    const presetFrom = this.data.presetFrom
+    const sourceFormat = presetFrom || this.data.presetFrom
 
     for (const file of newFiles) {
       if (file.size > this.data.maxFileSize) {
@@ -122,9 +190,14 @@ Page({
       }
 
       const ext = util.getFileExt(file.name || file.path)
-      
-      if (presetFrom) {
-        const validFormats = this.getValidFormats(presetFrom)
+
+      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        invalidFormatCount++
+        continue
+      }
+
+      if (sourceFormat) {
+        const validFormats = this.getValidFormats(sourceFormat)
         if (!validFormats.includes(ext)) {
           invalidFormatCount++
           continue
@@ -155,14 +228,16 @@ Page({
 
     if (invalidFormatCount > 0) {
       wx.showToast({
-        title: `${invalidFormatCount}个文件格式不符合要求`,
+        title: `${invalidFormatCount}个文件格式不支持`,
         icon: 'none'
       })
     }
 
-    this.setData({
-      files: [...currentFiles, ...validFiles]
-    })
+    if (validFiles.length > 0) {
+      this.setData({
+        files: [...currentFiles, ...validFiles]
+      })
+    }
   },
 
   getValidFormats(presetFrom) {
@@ -182,6 +257,7 @@ Page({
       pdf: ['pdf'],
       md: ['md'],
       txt: ['txt'],
+      csv: ['csv'],
       html: ['html', 'htm'],
       htm: ['html', 'htm']
     }

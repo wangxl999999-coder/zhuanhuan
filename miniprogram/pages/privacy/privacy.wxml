@@ -1,0 +1,43 @@
+<view class="container">
+  <view class="card">
+    <text class="text-large" style="font-weight: bold;">用户隐私协议</text>
+    
+    <view class="privacy-content mt-20">
+      <text class="text-small">
+欢迎使用文件格式转换小程序。我们非常重视您的个人信息和隐私保护。为了更好地保障您的个人权益，在使用我们的产品前，请您务必仔细阅读以下条款：
+
+1. 信息收集
+我们仅收集完成文件转换所必需的文件内容，不收集您的个人身份信息、通讯录、位置信息等敏感信息。上传的文件仅用于格式转换，转换完成后会自动删除。
+
+2. 信息使用
+- 上传的文件仅用于您指定的格式转换服务
+- 我们不会将您的文件内容用于任何其他目的
+- 我们不会将您的文件分享给任何第三方
+
+3. 信息存储
+- 上传的文件临时存储在服务器上，转换完成后立即删除
+- 转换后的文件保留7天，逾期自动删除
+- 您可以随时在历史记录中删除转换记录
+
+4. 权限说明
+- 相册/相机权限：用于您选择图片文件进行转换
+- 文件存储权限：用于保存转换后的文件到您的设备
+- 网络权限：用于文件上传和转换服务
+
+5. 协议更新
+我们可能会适时更新本隐私协议，更新后的协议将在本页面公布。
+
+如您有任何疑问，请通过应用内反馈渠道联系我们。
+      </text>
+    </view>
+
+    <view class="btn-group mt-30">
+      <view class="btn-secondary" style="text-align: center;" bindtap="onDisagree">
+        暂不使用
+      </view>
+      <view class="btn-primary" style="text-align: center;" bindtap="onAgree">
+        同意并继续
+      </view>
+    </view>
+  </view>
+</view>

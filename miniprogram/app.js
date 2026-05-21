@@ -9,6 +9,43 @@ App({
 
   onLaunch() {
     this.checkFreeConversions()
+    this.initPrivacy()
+  },
+
+  initPrivacy() {
+    if (wx.getPrivacySetting) {
+      wx.getPrivacySetting({
+        success: (res) => {
+          if (res.needAuthorization) {
+            this.showPrivacyAuthorization()
+          }
+        },
+        fail: () => {
+          console.log('获取隐私设置失败')
+        }
+      })
+    }
+  },
+
+  showPrivacyAuthorization() {
+    if (wx.requirePrivacyAuthorize) {
+      wx.requirePrivacyAuthorize({
+        success: () => {
+          console.log('隐私协议已同意')
+        },
+        fail: () => {
+          wx.showModal({
+            title: '隐私授权提示',
+            content: '您需要同意隐私协议才能使用文件选择功能，请在设置中开启',
+            showCancel: false
+          })
+        }
+      })
+    } else {
+      wx.navigateTo({
+        url: '/pages/privacy/privacy'
+      })
+    }
   },
 
   checkFreeConversions() {

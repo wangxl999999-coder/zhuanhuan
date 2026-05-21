@@ -1,21 +1,34 @@
 <view class="container">
   <view class="card">
     <text class="text-large" style="font-weight: bold;">选择文件</text>
-    <view class="text-muted text-small mt-10">支持批量选择，单个文件最大10MB</view>
+    <view class="text-muted text-small mt-10">支持 Word、Excel、PPT、PDF、Markdown、图片等格式</view>
+    <view class="text-muted text-small mt-5">单个文件最大10MB，可批量选择</view>
     
     <view class="upload-options mt-30">
-      <view class="upload-option" bindtap="onChooseFromChat">
-        <text style="font-size: 50rpx;">💬</text>
-        <text class="mt-10">从聊天记录</text>
-      </view>
       <view class="upload-option" bindtap="onChooseFromLocal">
-        <text style="font-size: 50rpx;">📱</text>
-        <text class="mt-10">从手机本地</text>
+        <text class="upload-icon">�</text>
+        <text class="upload-text mt-10">手机本地</text>
+        <text class="upload-hint">选择文件</text>
       </view>
       <view class="upload-option" bindtap="onChooseImages">
-        <text style="font-size: 50rpx;">🖼️</text>
-        <text class="mt-10">选择图片</text>
+        <text class="upload-icon">�</text>
+        <text class="upload-text mt-10">拍照/相册</text>
+        <text class="upload-hint">选择图片</text>
       </view>
+      <view class="upload-option" bindtap="onChooseFromChat">
+        <text class="upload-icon">💬</text>
+        <text class="upload-text mt-10">聊天记录</text>
+        <text class="upload-hint">从微信选择</text>
+      </view>
+    </view>
+
+    <view class="format-tags mt-20">
+      <view class="format-tag">📄 Word</view>
+      <view class="format-tag">📊 Excel</view>
+      <view class="format-tag">�️ PPT</view>
+      <view class="format-tag">📕 PDF</view>
+      <view class="format-tag">📝 Markdown</view>
+      <view class="format-tag">🖼️ 图片</view>
     </view>
   </view>
 
@@ -43,7 +56,7 @@
 
   <view class="card" wx:if="{{files.length === 0}}">
     <view class="empty-state">
-      <text class="empty-icon">📁</text>
+      <text class="empty-icon">�</text>
       <text class="empty-text">还没有选择文件</text>
       <text class="text-muted text-small mt-10">点击上方按钮选择文件开始转换</text>
     </view>

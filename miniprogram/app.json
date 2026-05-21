@@ -5,7 +5,8 @@
     "pages/convert/convert",
     "pages/preview/preview",
     "pages/history/history",
-    "pages/admin/admin"
+    "pages/admin/admin",
+    "pages/privacy/privacy"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -35,10 +36,6 @@
       "desc": "保存文件到相册"
     }
   },
-  "requiredPrivateInfos": [
-    "chooseMessageFile",
-    "chooseMedia"
-  ],
   "sitemapLocation": "sitemap.json",
   "style": "v2",
   "lazyCodeLoading": "requiredComponents"

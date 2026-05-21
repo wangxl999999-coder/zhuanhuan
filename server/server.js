@@ -41,7 +41,7 @@ const upload = multer({
     const allowedTypes = [
       '.doc', '.docx', '.pdf', '.xls', '.xlsx', '.ppt', '.pptx',
       '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp',
-      '.md', '.txt', '.html', '.htm'
+      '.md', '.txt', '.html', '.htm', '.csv'
     ];
     const ext = path.extname(file.originalname).toLowerCase();
     if (allowedTypes.includes(ext)) {

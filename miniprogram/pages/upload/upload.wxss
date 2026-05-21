@@ -20,10 +20,44 @@
   border-radius: 16rpx;
   font-size: 26rpx;
   color: #333;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
 }
 
 .upload-option:active {
   background-color: #f0f0f0;
+  border-color: #1677ff;
+}
+
+.upload-icon {
+  font-size: 56rpx;
+  margin-bottom: 6rpx;
+}
+
+.upload-text {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.upload-hint {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.format-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 20rpx;
+}
+
+.format-tag {
+  padding: 10rpx 20rpx;
+  background-color: #f0f7ff;
+  color: #1677ff;
+  font-size: 24rpx;
+  border-radius: 20rpx;
 }
 
 .file-list {

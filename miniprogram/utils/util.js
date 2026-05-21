@@ -29,7 +29,8 @@ const getFileIcon = (ext) => {
     md: '📝',
     html: '🌐',
     htm: '🌐',
-    txt: '📃'
+    txt: '📃',
+    csv: '📊'
   }
   return icons[ext] || '📁'
 }
@@ -52,7 +53,8 @@ const getFormatName = (format) => {
     md: 'Markdown',
     html: 'HTML网页',
     htm: 'HTML网页',
-    txt: '文本文件'
+    txt: '文本文件',
+    csv: 'CSV表格'
   }
   return names[format] || format.toUpperCase()
 }

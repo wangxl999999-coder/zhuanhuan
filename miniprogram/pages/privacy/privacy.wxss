@@ -1,0 +1,21 @@
+.privacy-content {
+  max-height: 800rpx;
+  overflow-y: auto;
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  border-radius: 12rpx;
+  line-height: 1.8;
+}
+
+.btn-group {
+  display: flex;
+  gap: 20rpx;
+}
+
+.btn-group .btn-primary,
+.btn-group .btn-secondary {
+  flex: 1;
+  padding: 24rpx;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+}
