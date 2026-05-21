@@ -1,3 +1,10 @@
+.format-hint {
+  padding: 16rpx 20rpx;
+  background-color: #e6f4ff;
+  border-radius: 8rpx;
+  border-left: 4rpx solid #1677ff;
+}
+
 .upload-options {
   display: flex;
   gap: 20rpx;

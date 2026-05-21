@@ -22,14 +22,26 @@ Page({
   },
 
   onChooseFromChat() {
+    const presetFrom = this.data.presetFrom
+    let fileType = 'all'
+    
+    if (presetFrom) {
+      if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(presetFrom)) {
+        fileType = 'image'
+      } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'md', 'txt', 'html', 'htm'].includes(presetFrom)) {
+        fileType = 'file'
+      }
+    }
+
     wx.chooseMessageFile({
       count: 9,
-      type: 'file',
+      type: fileType,
       success: (res) => {
         this.addFiles(res.tempFiles)
       },
       fail: (err) => {
-        if (err.errMsg !== 'chooseMessageFile:fail cancel') {
+        console.error('选择文件失败', err)
+        if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
           wx.showToast({ title: '选择文件失败', icon: 'none' })
         }
       }
@@ -37,14 +49,26 @@ Page({
   },
 
   onChooseFromLocal() {
+    const presetFrom = this.data.presetFrom
+    let fileType = 'all'
+    
+    if (presetFrom) {
+      if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(presetFrom)) {
+        fileType = 'image'
+      } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'md', 'txt', 'html', 'htm'].includes(presetFrom)) {
+        fileType = 'file'
+      }
+    }
+
     wx.chooseMessageFile({
       count: 9,
-      type: 'file',
+      type: fileType,
       success: (res) => {
         this.addFiles(res.tempFiles)
       },
       fail: (err) => {
-        if (err.errMsg !== 'chooseMessageFile:fail cancel') {
+        console.error('选择文件失败', err)
+        if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
           wx.showToast({ title: '选择文件失败', icon: 'none' })
         }
       }
@@ -52,6 +76,16 @@ Page({
   },
 
   onChooseImages() {
+    const presetFrom = this.data.presetFrom
+    
+    if (presetFrom && !['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(presetFrom)) {
+      wx.showToast({
+        title: `当前转换需要${util.getFormatName(presetFrom)}格式`,
+        icon: 'none'
+      })
+      return
+    }
+
     wx.chooseMedia({
       count: 9,
       mediaType: ['image'],
@@ -64,6 +98,12 @@ Page({
           type: 'image'
         }))
         this.addFiles(files)
+      },
+      fail: (err) => {
+        console.error('选择图片失败', err)
+        if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
+          wx.showToast({ title: '选择图片失败', icon: 'none' })
+        }
       }
     })
   },
@@ -72,13 +112,25 @@ Page({
     const currentFiles = this.data.files
     const validFiles = []
     let oversizeCount = 0
+    let invalidFormatCount = 0
+    const presetFrom = this.data.presetFrom
 
     for (const file of newFiles) {
       if (file.size > this.data.maxFileSize) {
         oversizeCount++
         continue
       }
+
       const ext = util.getFileExt(file.name || file.path)
+      
+      if (presetFrom) {
+        const validFormats = this.getValidFormats(presetFrom)
+        if (!validFormats.includes(ext)) {
+          invalidFormatCount++
+          continue
+        }
+      }
+
       const fileItem = {
         id: util.generateId(),
         name: file.name || file.path.split('/').pop(),
@@ -101,9 +153,39 @@ Page({
       })
     }
 
+    if (invalidFormatCount > 0) {
+      wx.showToast({
+        title: `${invalidFormatCount}个文件格式不符合要求`,
+        icon: 'none'
+      })
+    }
+
     this.setData({
       files: [...currentFiles, ...validFiles]
     })
+  },
+
+  getValidFormats(presetFrom) {
+    const formatGroups = {
+      doc: ['doc', 'docx'],
+      docx: ['doc', 'docx'],
+      xls: ['xls', 'xlsx'],
+      xlsx: ['xls', 'xlsx'],
+      ppt: ['ppt', 'pptx'],
+      pptx: ['ppt', 'pptx'],
+      jpg: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'],
+      jpeg: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'],
+      png: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'],
+      gif: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'],
+      bmp: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'],
+      webp: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'],
+      pdf: ['pdf'],
+      md: ['md'],
+      txt: ['txt'],
+      html: ['html', 'htm'],
+      htm: ['html', 'htm']
+    }
+    return formatGroups[presetFrom] || [presetFrom]
   },
 
   onRemoveFile(e) {
