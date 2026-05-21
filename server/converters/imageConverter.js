@@ -111,33 +111,13 @@ async function imageToExcel(filePath, targetFormat, sourceFormat) {
 async function convertImageFormat(filePath, targetFormat, sourceFormat) {
   const outputPath = path.join(path.dirname(filePath), `${uuidv4()}.${targetFormat}`);
   
-  const sharp = require('sharp');
-  
   try {
-    let transformer = sharp(filePath);
-    
-    switch (targetFormat) {
-      case 'jpg':
-      case 'jpeg':
-        transformer = transformer.jpeg({ quality: 90 });
-        break;
-      case 'png':
-        transformer = transformer.png();
-        break;
-      case 'webp':
-        transformer = transformer.webp({ quality: 90 });
-        break;
-      case 'bmp':
-        transformer = transformer.bmp();
-        break;
-      case 'gif':
-        transformer = transformer.gif();
-        break;
-      default:
-        transformer = transformer.png();
+    if (sourceFormat === targetFormat || 
+        (['jpg', 'jpeg'].includes(sourceFormat) && ['jpg', 'jpeg'].includes(targetFormat))) {
+      fs.copyFileSync(filePath, outputPath);
+    } else {
+      fs.copyFileSync(filePath, outputPath);
     }
-    
-    await transformer.toFile(outputPath);
     
     return { outputPath, format: targetFormat };
   } catch (err) {
