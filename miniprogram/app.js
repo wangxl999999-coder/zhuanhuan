@@ -39,7 +39,7 @@ App({
   initAd() {
     if (wx.createRewardedVideoAd) {
       this.rewardedVideoAd = wx.createRewardedVideoAd({
-        adUnitId: 'adunit-xxxxxxxxxxxxxxxx'
+        adUnitId: 'adunit-a850d1b1b9071b11'
       })
       
       this.rewardedVideoAd.onLoad(() => {
