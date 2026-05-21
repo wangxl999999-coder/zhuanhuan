@@ -3,12 +3,12 @@ App({
     userInfo: null,
     apiBaseUrl: 'http://localhost:3000/api',
     freeConversions: 0,
-    maxFileSize: 10 * 1024 * 1024
+    maxFileSize: 10 * 1024 * 1024,
+    adUnitId: 'adunit-a850d1b1b9071b11'
   },
 
   onLaunch() {
     this.checkFreeConversions()
-    this.initAd()
   },
 
   checkFreeConversions() {
@@ -36,53 +36,60 @@ App({
     return this.globalData.freeConversions > 0
   },
 
-  initAd() {
-    if (wx.createRewardedVideoAd) {
-      this.rewardedVideoAd = wx.createRewardedVideoAd({
-        adUnitId: 'adunit-a850d1b1b9071b11'
-      })
-      
-      this.rewardedVideoAd.onLoad(() => {
-        console.log('激励视频广告加载成功')
-      })
+  createRewardedAd() {
+    if (!wx.createRewardedVideoAd) {
+      return null
+    }
 
-      this.rewardedVideoAd.onError((err) => {
-        console.error('激励视频广告加载失败', err)
-      })
+    const rewardedVideoAd = wx.createRewardedVideoAd({
+      adUnitId: this.globalData.adUnitId
+    })
 
-      this.rewardedVideoAd.onClose((res) => {
+    rewardedVideoAd.onLoad(() => {
+      console.log('激励视频广告加载成功')
+    })
+
+    rewardedVideoAd.onError((err) => {
+      console.error('激励视频广告加载失败', err)
+    })
+
+    return rewardedVideoAd
+  },
+
+  showRewardedAd(rewardedVideoAd) {
+    return new Promise((resolve, reject) => {
+      if (!rewardedVideoAd) {
+        reject(new Error('广告未初始化'))
+        return
+      }
+
+      const handleClose = (res) => {
+        rewardedVideoAd.offClose(handleClose)
         if (res && res.isEnded) {
           this.addFreeConversion()
           wx.showToast({
             title: '获得1次免费转换',
             icon: 'success'
           })
+          resolve()
+        } else {
+          reject(new Error('未完成观看'))
         }
-      })
-    }
-  },
-
-  showRewardedAd() {
-    return new Promise((resolve, reject) => {
-      if (this.rewardedVideoAd) {
-        this.rewardedVideoAd.show().catch(() => {
-          this.rewardedVideoAd.load().then(() => {
-            this.rewardedVideoAd.show()
-            resolve()
-          }).catch(err => {
-            reject(err)
-          })
-        })
-        this.rewardedVideoAd.onClose((res) => {
-          if (res && res.isEnded) {
-            resolve()
-          } else {
-            reject(new Error('未完成观看'))
-          }
-        })
-      } else {
-        reject(new Error('广告未初始化'))
       }
+
+      rewardedVideoAd.onClose(handleClose)
+
+      rewardedVideoAd.show().catch((err) => {
+        rewardedVideoAd.load().then(() => {
+          rewardedVideoAd.show().catch((loadErr) => {
+            rewardedVideoAd.offClose(handleClose)
+            reject(loadErr)
+          })
+        }).catch((loadErr) => {
+          rewardedVideoAd.offClose(handleClose)
+          reject(loadErr)
+        })
+      })
     })
   }
 })

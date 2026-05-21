@@ -19,6 +19,7 @@ Page({
   onLoad() {
     this.loadFreeConversions()
     this.loadRecentFiles()
+    this.rewardedVideoAd = app.createRewardedAd()
   },
 
   onShow() {
@@ -57,7 +58,9 @@ Page({
       content: '观看一次广告可获得1次免费转换机会，是否继续？',
       success: (res) => {
         if (res.confirm) {
-          app.showRewardedAd().catch(() => {
+          app.showRewardedAd(this.rewardedVideoAd).then(() => {
+            this.loadFreeConversions()
+          }).catch(() => {
             wx.showToast({
               title: '广告加载失败',
               icon: 'none'

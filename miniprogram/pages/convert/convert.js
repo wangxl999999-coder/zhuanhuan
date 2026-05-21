@@ -56,6 +56,8 @@ Page({
       freeCount: app.globalData.freeConversions,
       needAd: !app.hasFreeConversion()
     })
+
+    this.rewardedVideoAd = app.createRewardedAd()
   },
 
   onShow() {
@@ -71,14 +73,10 @@ Page({
   },
 
   onWatchAd() {
-    app.showRewardedAd().then(() => {
+    app.showRewardedAd(this.rewardedVideoAd).then(() => {
       this.setData({ 
         needAd: false,
         freeCount: app.globalData.freeConversions
-      })
-      wx.showToast({
-        title: '获得1次免费转换',
-        icon: 'success'
       })
     }).catch(() => {
       wx.showToast({
