@@ -9,35 +9,54 @@ App({
 
   onLaunch() {
     this.checkFreeConversions()
-    this.initPrivacy()
+    this.initPrivacyCheck()
   },
 
-  initPrivacy() {
+  initPrivacyCheck() {
     if (wx.getPrivacySetting) {
       wx.getPrivacySetting({
         success: (res) => {
-          if (res.needAuthorization) {
-            this.showPrivacyAuthorization()
+          if (res.needAuthorization && wx.requirePrivacyAuthorize) {
+            console.log('需要隐私授权，将在使用相关功能时提示用户')
           }
-        },
-        fail: () => {
-          console.log('获取隐私设置失败')
         }
       })
     }
   },
 
-  showPrivacyAuthorization() {
-    if (wx.requirePrivacyAuthorize) {
-      wx.requirePrivacyAuthorize({
-        success: () => {
-          console.log('隐私协议已同意')
+  checkPrivacyAuthorization() {
+    return new Promise((resolve) => {
+      if (!wx.getPrivacySetting) {
+        resolve(true)
+        return
+      }
+
+      wx.getPrivacySetting({
+        success: (res) => {
+          if (!res.needAuthorization) {
+            resolve(true)
+          } else {
+            if (wx.requirePrivacyAuthorize) {
+              wx.requirePrivacyAuthorize({
+                success: () => resolve(true),
+                fail: () => resolve(false)
+              })
+            } else {
+              resolve(false)
+            }
+          }
         },
+        fail: () => resolve(true)
+      })
+    })
+  },
+
+  openPrivacyPage() {
+    if (wx.openPrivacyContract) {
+      wx.openPrivacyContract({
         fail: () => {
-          wx.showModal({
-            title: '隐私授权提示',
-            content: '您需要同意隐私协议才能使用文件选择功能，请在设置中开启',
-            showCancel: false
+          wx.navigateTo({
+            url: '/pages/privacy/privacy'
           })
         }
       })

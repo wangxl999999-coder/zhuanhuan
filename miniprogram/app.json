@@ -36,6 +36,12 @@
       "desc": "保存文件到相册"
     }
   },
+  "requiredPrivateInfos": [
+    "chooseMedia",
+    "chooseMessageFile",
+    "chooseFile",
+    "writePhotosAlbum"
+  ],
   "sitemapLocation": "sitemap.json",
   "style": "v2",
   "lazyCodeLoading": "requiredComponents"

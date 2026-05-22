@@ -142,9 +142,26 @@ Page({
 
   async convertSingleFile(file) {
     return new Promise((resolve, reject) => {
+      let filePath = file.path
+
+      if (file.isMock && file.mockContent) {
+        const fs = wx.getFileSystemManager()
+        const mockPath = `${wx.env.USER_DATA_PATH}/${file.name}`
+        
+        try {
+          fs.writeFileSync(mockPath, file.mockContent, 'utf8')
+          filePath = mockPath
+          console.log('模拟文件已写入:', mockPath)
+        } catch (e) {
+          console.error('写入模拟文件失败:', e)
+          reject(new Error('模拟文件处理失败，请使用真实文件测试'))
+          return
+        }
+      }
+
       const uploadTask = wx.uploadFile({
         url: app.globalData.apiBaseUrl + '/convert',
-        filePath: file.path,
+        filePath: filePath,
         name: 'file',
         formData: {
           targetFormat: this.data.selectedFormat,
@@ -166,7 +183,13 @@ Page({
             reject(e)
           }
         },
-        fail: reject
+        fail: (err) => {
+          if (file.isMock) {
+            reject(new Error('模拟文件上传失败。模拟文件仅用于测试流程，如需完整功能请配置隐私协议后使用真实文件'))
+          } else {
+            reject(err)
+          }
+        }
       })
 
       uploadTask.onProgressUpdate((res) => {

@@ -1,3 +1,37 @@
+.privacy-banner {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 30rpx;
+  background: linear-gradient(135deg, #fff7e6 0%, #ffe7ba 100%);
+  border: 2rpx solid #ffa940;
+  border-radius: 16rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 169, 64, 0.2);
+}
+
+.privacy-banner:active {
+  opacity: 0.8;
+}
+
+.privacy-banner-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+}
+
+.privacy-banner-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #d46b08;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.privacy-banner-arrow {
+  font-size: 40rpx;
+  color: #ffa940;
+  margin-left: 10rpx;
+}
+
 .format-hint {
   padding: 16rpx 20rpx;
   background-color: #e6f4ff;
@@ -73,4 +107,38 @@
 
 .remove-btn:active {
   color: #fa5151;
+}
+
+.privacy-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 20rpx;
+  background-color: #f9f9f9;
+  border-radius: 12rpx;
+}
+
+.privacy-link {
+  color: #1677ff;
+  font-weight: 500;
+}
+
+.privacy-hint:active {
+  background-color: #f0f0f0;
+}
+
+.dev-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 20rpx;
+  background-color: #fff7e6;
+  border: 1rpx dashed #ffa940;
+  border-radius: 12rpx;
+}
+
+.dev-hint:active {
+  background-color: #ffe7ba;
 }

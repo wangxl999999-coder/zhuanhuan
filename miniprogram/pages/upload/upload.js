@@ -10,6 +10,8 @@ const ALLOWED_EXTENSIONS = [
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
 
+const IS_DEV = true
+
 Page({
   data: {
     files: [],
@@ -17,7 +19,8 @@ Page({
     uploadProgress: 0,
     presetFrom: '',
     presetTo: '',
-    maxFileSize: 10 * 1024 * 1024
+    maxFileSize: 10 * 1024 * 1024,
+    privacyNeedAuth: false
   },
 
   onLoad(options) {
@@ -27,91 +30,90 @@ Page({
     if (options.to) {
       this.setData({ presetTo: options.to })
     }
+    
+    this.checkPrivacyStatus()
+  },
+
+  checkPrivacyStatus() {
+    if (wx.getPrivacySetting) {
+      wx.getPrivacySetting({
+        success: (res) => {
+          this.setData({
+            privacyNeedAuth: res.needAuthorization
+          })
+        },
+        fail: () => {
+          this.setData({
+            privacyNeedAuth: false
+          })
+        }
+      })
+    }
   },
 
   onChooseFromChat() {
-    this.chooseFile('chat')
+    const presetFrom = this.data.presetFrom
+    let fileType = 'file'
+    if (presetFrom && IMAGE_EXTENSIONS.includes(presetFrom)) {
+      fileType = 'image'
+    }
+
+    wx.chooseMessageFile({
+      count: 9,
+      type: fileType,
+      success: (res) => {
+        this.addFiles(res.tempFiles)
+      },
+      fail: (err) => {
+        console.error('从聊天选择文件失败', err)
+        this.handleChooseError(err, '聊天记录')
+      }
+    })
   },
 
   onChooseFromLocal() {
-    this.chooseFile('local')
-  },
-
-  onChooseImages() {
-    this.chooseFile('camera')
-  },
-
-  chooseFile(source) {
     const presetFrom = this.data.presetFrom
     let fileType = 'file'
-    let mediaType = ['image']
-
-    if (presetFrom) {
-      if (IMAGE_EXTENSIONS.includes(presetFrom)) {
-        fileType = 'image'
-      } else if (ALLOWED_EXTENSIONS.includes(presetFrom)) {
-        fileType = 'file'
-      }
+    if (presetFrom && IMAGE_EXTENSIONS.includes(presetFrom)) {
+      fileType = 'image'
     }
 
-    if (source === 'camera') {
-      this.chooseFromCamera(presetFrom)
+    if (wx.chooseFile) {
+      wx.chooseFile({
+        count: 9,
+        type: fileType,
+        success: (res) => {
+          const files = res.tempFiles.map(file => ({
+            name: file.name,
+            path: file.path,
+            size: file.size,
+            type: file.type
+          }))
+          this.addFiles(files)
+        },
+        fail: (err) => {
+          console.error('从本地选择文件失败', err)
+          this.handleChooseError(err, '手机本地')
+        }
+      })
     } else {
-      this.chooseFromFilePicker(fileType, presetFrom)
-    }
-  },
-
-  chooseFromFilePicker(fileType, presetFrom) {
-    const openPicker = () => {
       wx.chooseMessageFile({
         count: 9,
         type: fileType,
         success: (res) => {
-          this.addFiles(res.tempFiles, presetFrom)
+          this.addFiles(res.tempFiles)
         },
         fail: (err) => {
-          console.error('选择文件失败', err)
-          if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
-            if (err.errno === 112 || (err.errMsg && err.errMsg.indexOf('privacy') !== -1)) {
-              wx.showModal({
-                title: '需要隐私授权',
-                content: '请先同意隐私协议后再选择文件',
-                showCancel: false,
-                success: () => {
-                  if (wx.getPrivacySetting) {
-                    wx.getPrivacySetting({
-                      success: (res) => {
-                        if (res.needAuthorization && wx.openPrivacyContract) {
-                          wx.openPrivacyContract({})
-                        }
-                      }
-                    })
-                  }
-                }
-              })
-            } else {
-              wx.showToast({ title: '选择文件失败', icon: 'none' })
-            }
-          }
+          console.error('从本地选择文件失败', err)
+          this.handleChooseError(err, '手机本地')
         }
       })
-    }
-
-    if (wx.requirePrivacyAuthorize) {
-      wx.requirePrivacyAuthorize({
-        success: () => {
-          openPicker()
-        },
-        fail: () => {
-          wx.showToast({ title: '请先同意隐私协议', icon: 'none' })
-        }
-      })
-    } else {
-      openPicker()
     }
   },
 
-  chooseFromCamera(presetFrom) {
+  onChooseImages() {
+    const presetFrom = this.data.presetFrom
+
     if (presetFrom && !IMAGE_EXTENSIONS.includes(presetFrom)) {
       wx.showToast({
         title: `当前转换需要${util.getFormatName(presetFrom)}格式`,
@@ -120,68 +122,280 @@ Page({
       return
     }
 
-    const openChooseMedia = () => {
-      wx.chooseMedia({
-        count: 9,
-        mediaType: ['image'],
-        sourceType: ['album', 'camera'],
-        success: (res) => {
-          const files = res.tempFiles.map(file => ({
-            name: file.tempFilePath.split('/').pop(),
-            path: file.tempFilePath,
-            size: file.size,
-            type: 'image'
-          }))
-          this.addFiles(files, presetFrom)
-        },
-        fail: (err) => {
-          console.error('选择图片失败', err)
-          if (err.errMsg && err.errMsg.indexOf('cancel') === -1) {
-            if (err.errno === 112 || (err.errMsg && err.errMsg.indexOf('privacy') !== -1)) {
-              wx.showModal({
-                title: '需要隐私授权',
-                content: '请先同意隐私协议后再选择图片，或从"手机本地"选择文件',
-                showCancel: false,
-                success: () => {
-                  if (wx.getPrivacySetting) {
-                    wx.getPrivacySetting({
-                      success: (res) => {
-                        if (res.needAuthorization && wx.openPrivacyContract) {
-                          wx.openPrivacyContract({})
-                        }
-                      }
-                    })
-                  }
-                }
-              })
-            } else {
-              wx.showToast({ title: '选择图片失败，请从"手机本地"选择', icon: 'none' })
-            }
-          }
+    wx.chooseMedia({
+      count: 9,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const files = res.tempFiles.map(file => ({
+          name: file.tempFilePath.split('/').pop(),
+          path: file.tempFilePath,
+          size: file.size,
+          type: 'image'
+        }))
+        this.addFiles(files)
+      },
+      fail: (err) => {
+        console.error('选择图片失败', err)
+        this.handleChooseError(err, '拍照/相册')
+      }
+    })
+  },
+
+  handleChooseError(err, source) {
+    if (err.errMsg && err.errMsg.indexOf('cancel') !== -1) {
+      return
+    }
+
+    const isPrivacyError = err.errno === 112 || 
+      (err.errMsg && err.errMsg.indexOf('privacy') !== -1) ||
+      (err.errMsg && err.errMsg.indexOf('scope') !== -1) ||
+      (err.errMsg && err.errMsg.indexOf('declared') !== -1)
+
+    if (isPrivacyError) {
+      this.showPrivacyErrorDialog(source)
+    } else {
+      this.showGeneralErrorDialog(source)
+    }
+  },
+
+  showPrivacyErrorDialog(source) {
+    const showMockOption = IS_DEV
+
+    wx.showModal({
+      title: '🔒 需要隐私授权',
+      content: '根据微信平台规则，使用文件选择功能需要先同意隐私协议。\n\n点击"去授权"按钮，在弹出的协议中点击"同意"即可。',
+      confirmText: '去授权',
+      cancelText: showMockOption ? '使用模拟文件' : '知道了',
+      success: (res) => {
+        if (res.confirm) {
+          this.goPrivacyAuth(source)
+        } else if (showMockOption) {
+          this.showMockFilePicker(source)
         }
-      })
+      }
+    })
+  },
+
+  showGeneralErrorDialog(source) {
+    wx.showModal({
+      title: '选择失败',
+      content: `从${source}选择文件失败。\n\n💡 建议：优先使用"手机本地"入口选择文件，兼容性更好。`,
+      confirmText: '换个入口试试',
+      cancelText: IS_DEV ? '使用模拟文件' : '取消',
+      success: (res) => {
+        if (res.confirm) {
+          this.onChooseFromLocal()
+        } else if (IS_DEV) {
+          this.showMockFilePicker(source)
+        }
+      }
+    })
+  },
+
+  showMockFilePicker(source) {
+    const presetFrom = this.data.presetFrom
+    let extensions = ALLOWED_EXTENSIONS
+    
+    if (presetFrom) {
+      extensions = this.getValidFormats(presetFrom)
+    }
+
+    const mockFiles = extensions.slice(0, 6).map((ext, index) => ({
+      ext: ext,
+      name: `示例文件_${index + 1}.${ext}`,
+      icon: util.getFileIcon(ext),
+      formatName: util.getFormatName(ext)
+    }))
+
+    const itemList = mockFiles.map(f => `${f.icon} ${f.name}`)
+
+    wx.showActionSheet({
+      itemList: itemList,
+      success: (res) => {
+        const selected = mockFiles[res.tapIndex]
+        this.addMockFile(selected.ext, selected.name)
+      }
+    })
+  },
+
+  addMockFile(ext, name) {
+    const mockContent = this.generateMockContent(ext)
+    const size = mockContent.length
+    
+    const fileItem = {
+      id: util.generateId(),
+      name: name,
+      path: `mock://${name}`,
+      size: size,
+      sizeText: util.formatFileSize(size),
+      ext: ext,
+      icon: util.getFileIcon(ext),
+      formatName: util.getFormatName(ext),
+      uploaded: false,
+      uploadProgress: 0,
+      isMock: true,
+      mockContent: mockContent
+    }
+
+    const currentFiles = this.data.files
+    this.setData({
+      files: [...currentFiles, fileItem]
+    })
+
+    wx.showToast({
+      title: '已添加模拟文件',
+      icon: 'success'
+    })
+  },
+
+  generateMockContent(ext) {
+    const mockContents = {
+      doc: '这是一个模拟的Word文档内容。\n\n用于开发测试。',
+      docx: '这是一个模拟的Word文档内容。\n\n用于开发测试。',
+      xls: '姓名,年龄,职业\n张三,25,工程师\n李四,30,设计师',
+      xlsx: '姓名,年龄,职业\n张三,25,工程师\n李四,30,设计师',
+      ppt: '幻灯片1\n标题：测试\n内容：这是测试内容',
+      pptx: '幻灯片1\n标题：测试\n内容：这是测试内容',
+      pdf: '%PDF-1.4\n模拟PDF内容',
+      md: '# 测试文档\n\n这是一个Markdown测试文件。\n\n## 二级标题\n\n- 列表项1\n- 列表项2',
+      txt: '这是一个纯文本文件的内容。\n\n用于测试文件转换功能。',
+      csv: 'id,name,value\n1,test1,100\n2,test2,200',
+      html: '<!DOCTYPE html>\n<html>\n<head><title>Test</title></head>\n<body><h1>Hello</h1></body>\n</html>',
+      htm: '<!DOCTYPE html>\n<html>\n<head><title>Test</title></head>\n<body><h1>Hello</h1></body>\n</html>',
+      jpg: 'mock_image_data',
+      jpeg: 'mock_image_data',
+      png: 'mock_image_data',
+      gif: 'mock_image_data',
+      bmp: 'mock_image_data',
+      webp: 'mock_image_data'
+    }
+    return mockContents[ext] || 'mock file content'
+  },
+
+  goPrivacyAuth(source) {
+    const self = this
+    
+    const retryOperation = () => {
+      this.checkPrivacyStatus()
+      if (source === '聊天记录') {
+        this.onChooseFromChat()
+      } else if (source === '拍照/相册') {
+        this.onChooseImages()
+      } else {
+        this.onChooseFromLocal()
+      }
     }
 
     if (wx.requirePrivacyAuthorize) {
       wx.requirePrivacyAuthorize({
         success: () => {
-          openChooseMedia()
+          wx.showToast({
+            title: '授权成功',
+            icon: 'success',
+            duration: 1500
+          })
+          setTimeout(() => {
+            retryOperation()
+          }, 1500)
         },
-        fail: () => {
-          wx.showToast({ title: '请先同意隐私协议', icon: 'none' })
+        fail: (err) => {
+          console.error('requirePrivacyAuthorize failed:', err)
+          this.showPrivacyAuthOptions(source)
         }
       })
     } else {
-      openChooseMedia()
+      this.showPrivacyAuthOptions(source)
     }
   },
 
-  addFiles(newFiles, presetFrom) {
+  showPrivacyAuthOptions(source) {
+    const self = this
+    const content = '需要您同意隐私协议后才能使用文件选择功能。\n\n请选择以下方式完成授权：\n\n1. 点击"查看隐私协议"，阅读后点击"同意"\n\n2. 点击右上角"..." → 设置 → 找到"隐私协议"并同意\n\n3. 退出小程序后重新进入，在弹出的隐私协议中点击同意'
+
+    wx.showModal({
+      title: '🔒 隐私授权',
+      content: content,
+      confirmText: '查看隐私协议',
+      cancelText: '手动设置',
+      success: (res) => {
+        if (res.confirm) {
+          if (wx.openPrivacyContract) {
+            wx.openPrivacyContract({
+              success: () => {
+                wx.showToast({
+                  title: '请点击"同意"按钮',
+                  icon: 'none',
+                  duration: 3000
+                })
+                setTimeout(() => {
+                  self.checkPrivacyStatus()
+                }, 3000)
+              },
+              fail: () => {
+                self.navigateToPrivacyPage(source)
+              }
+            })
+          } else {
+            self.navigateToPrivacyPage(source)
+          }
+        } else {
+          self.showManualGuide()
+        }
+      }
+    })
+  },
+
+  navigateToPrivacyPage(source) {
+    wx.navigateTo({
+      url: '/pages/privacy/privacy',
+      success: () => {
+        wx.setStorageSync('pendingSource', source)
+      }
+    })
+  },
+
+  showManualGuide() {
+    wx.showModal({
+      title: '手动授权步骤',
+      content: '请按以下步骤操作：\n\n1. 点击小程序右上角的"..."按钮\n2. 选择"设置"\n3. 找到"隐私协议"并点击\n4. 点击"同意"按钮\n5. 返回后重新选择文件',
+      showCancel: false,
+      confirmText: '我知道了'
+    })
+  },
+
+  onOpenPrivacy() {
+    this.goPrivacyAuth('手机本地')
+  },
+
+  onShow() {
+    this.checkPrivacyStatus()
+    
+    const pendingSource = wx.getStorageSync('pendingSource')
+    if (pendingSource) {
+      wx.removeStorageSync('pendingSource')
+      setTimeout(() => {
+        if (pendingSource === '聊天记录') {
+          this.onChooseFromChat()
+        } else if (pendingSource === '拍照/相册') {
+          this.onChooseImages()
+        } else {
+          this.onChooseFromLocal()
+        }
+      }, 500)
+    }
+  },
+
+  onChooseMock() {
+    this.showMockFilePicker('dev')
+  },
+
+  addFiles(newFiles) {
     const currentFiles = this.data.files
     const validFiles = []
     let oversizeCount = 0
     let invalidFormatCount = 0
-    const sourceFormat = presetFrom || this.data.presetFrom
+    const sourceFormat = this.data.presetFrom
 
     for (const file of newFiles) {
       if (file.size > this.data.maxFileSize) {
